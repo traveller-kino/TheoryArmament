@@ -1,0 +1,36 @@
+[
+{
+    "SpellName": "Poison Brace (projectile)",
+    "Potency": 40.00,
+    "Timing": [0.00, 3000.00],
+    "Interdicting": true,
+    "TargetIdsAffected": [0],
+    "SecondaryEffect": [{
+        "SpellName": "Poison Brace (explosion)",
+        "Potency": 35.00,
+        "TimingOffset": [0.00, 0.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [1,2,3,4]
+    }, {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 22.50,
+        "TimingOffset": [0.00, 8000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4]
+    }]
+},
+{
+    "SpellName": "Fire Arrow (explosion)",
+    "Potency": 50.00,
+    "Timing": [0.00, 3000.00],
+    "Interdicting": true,
+    "TargetIdsAffected": [0,1,2],
+        "SecondaryEffect": [{
+        "SpellName": "Fire Arrow (damage over time)",
+        "Potency": 30.00,
+        "TimingOffset": [0.00, 3000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2]
+    }]
+}
+]
