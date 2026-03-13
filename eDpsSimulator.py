@@ -23,6 +23,10 @@ import math
 import random
 import json
 from concurrent.futures import ThreadPoolExecutor
+import copy
+
+N_DEBUG = True
+eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 
 # Genetic Algorithm Parameters
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
@@ -47,6 +51,7 @@ Timing              Time from start of cast to hit on enemy (usually 2-3 seconds
 Interdicting        Whether or not the cast is active
 TargetIdsAffected   Some effects hit "certain targets", while "avoiding others"; some effects are mutually exclusive. Fixed enemy IDs are used to keep track of this.
 SecondaryEffect     Secondary spell effects, as spells themselves
+Unique              Whether or not the spell needs to wear off before re-applying
 """
 
 # TODO: evaluate rotations ('the meat' of the programming)
@@ -57,7 +62,7 @@ spellDatabase = json.load(spellDatabaseFile)
 def generateRotation():
     nRotation = []
     for i in range(0, SIM_ROTATION_SIZE):
-        nRotation.append(random.choice(spellDatabase))
+        nRotation.append(copy.deepcopy(random.choice(spellDatabase)))
     return nRotation
 
 def generateRotations(count=GA_FOREST_SIZE):
@@ -90,24 +95,38 @@ def simulateRotation(rotation):
         for spell in activeSpells:
             spell['Timing'][1] -= SIM_TIMING_EPSILON
             if spell['Timing'][1] <= 0.00:
-                damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']) )
-                spellsToRemove.append(spell)
+                    damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))) )
+                    spellsToRemove.append(spell)
         for spellToRemove in spellsToRemove: # remove() does not work while iterating on the parent list
             activeSpells.remove(spellToRemove)
+            print(eventLogAnchor.format(Timestamp=currentTime,Activity='Lapsed',SpellName=spellToRemove['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
         spellsToRemove = [] # Clear it out
 
         pass
 
-        if currentTime < interdictedTill: # Simulating animation lock
+        if currentTime <= interdictedTill: # Simulating animation lock
             currentTime += SIM_TIMING_EPSILON
             continue
         else:
             spell = rotation.pop(0)
             if spell['Interdicting'] == True:
                 interdictedTill = currentTime + spell['Timing'][1]
-            activeSpells.append(spell)
-            # add secondary effects
+            activeSpells.append(spell) # logic error here?
+            print(eventLogAnchor.format(Timestamp=currentTime,Activity='Activated',SpellName=spell['SpellName'],Timestamp2=currentTime+spell['Timing'][1])) if N_DEBUG else ''
 
+            for sSpell in spell['SecondaryEffect']:
+                sSpell['Timing'] = [ 0.00, spell['Timing'][1] + sSpell['TimingOffset'][1] ]
+
+                suppress = False
+                if sSpell['Unique'] == True:
+                    for oSpell in activeSpells:
+                        if oSpell['SpellName'] == sSpell['SpellName']: suppress = True
+                if not suppress: 
+                    activeSpells.append(sSpell)
+                    print(eventLogAnchor.format(Timestamp=currentTime,Activity='Activated',SpellName=sSpell['SpellName'],Timestamp2=currentTime+sSpell['Timing'][1])) if N_DEBUG else ''
+                else:
+                    print(eventLogAnchor.format(Timestamp=currentTime,Activity='SUPPRESSED',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
+                
         currentTime += SIM_TIMING_EPSILON
 
     return damageAttributions
