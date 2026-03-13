@@ -37,5 +37,21 @@
         "TargetIdsAffected": [0,1,2],
         "Unique": true
     }]
+},
+{
+    "SpellName": "Magic Claw (hitscan)",
+    "Potency": 0.00,
+    "Timing": [0.00, 2000.00],
+    "Interdicting": true,
+    "Unique": false,
+    "TargetIdsAffected": [0],
+        "SecondaryEffect": [{
+        "SpellName": "Magic Claw (two hits)",
+        "Potency": 40.00,
+        "TimingOffset": [0.00, 300.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0],
+        "Unique": true
+    }]
 }
 ]

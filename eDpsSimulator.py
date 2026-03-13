@@ -33,9 +33,9 @@ eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 # Genetic Algorithm Parameters
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
 GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
-GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitnessTarget - fitness # Can change to any error-penalizing function you want (e.g. squared error)
-GA_FOREST_SIZE =                10        # How many rotations to work with
-GA_GRADBOOST_AUTOCULL =         44.55        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
+GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitness - fitnessTarget # Can change to any error-penalizing function you want (e.g. squared error)
+GA_FOREST_SIZE =                100        # How many rotations to work with
+GA_GRADBOOST_AUTOCULL =         -64.85        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
 GA_FITNESS_TARGET =             120.00      # Instantly terminate the simulation upon reaching this value (may be impossible)
 
 # Simulation Parameters
@@ -44,7 +44,7 @@ SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timin
 SIM_TIMING_EPSILON =        10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
 SIM_RUNTIME =               600000.00    # How long to simulate the rotation
-SIM_ROTATION_SIZE =         1000        # How deep to generate a rotation
+SIM_ROTATION_SIZE =         300        # How deep to generate a rotation
 
 """
 SpellDB Fields
@@ -78,13 +78,8 @@ def generateRotations(count=GA_FOREST_SIZE):
             allRotations.append(job.result())
     return allRotations
 
-def blendRotations(mother, father):
-    nChild = []
-    for motherSpell,fatherSpell in zip(mother,father):
-        nChild.append(random.choice([motherSpell,fatherSpell]))
-    return nChild
-
 def simulateRotation(rotation):
+    rotation = copy.deepcopy(rotation)
     currentTime =   0.00
     terminalTime =  SIM_RUNTIME
 
@@ -111,6 +106,7 @@ def simulateRotation(rotation):
             currentTime += SIM_TIMING_EPSILON
             continue
         else:
+            # add spell whiff logic here (if succeeded, interdict and continue)
             spell = rotation.pop(0)
             rotationPerformed.append(copy.deepcopy(spell))
             if spell['Interdicting'] == True:
@@ -132,8 +128,7 @@ def simulateRotation(rotation):
                     print(eventLogAnchor.format(Timestamp=currentTime,Activity='SUPPRESSED',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
                 
         currentTime += SIM_TIMING_EPSILON
-
-    return (damageAttributions, rotationPerformed)
+    return (damageAttributions, copy.deepcopy(rotationPerformed))
 
 def analyzeRotation(damageAttributions, rotationPerformed):
     totalDamageWithAttribution = damageAttributions.groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
@@ -142,37 +137,83 @@ def analyzeRotation(damageAttributions, rotationPerformed):
 
     fitness = GA_FITNESS_FUNCTION(GA_FITNESS_TARGET, totalGeneralDps)
 
-    prettyPrintRotationPerformed = []
-    for spell in rotationPerformed:
-        prettyPrintRotationPerformed.append(spell['SpellName'])
-    return (fitness, totalDamageWithAttribution, rotationPerformed, prettyPrintRotationPerformed)
+    return (fitness, totalDamageWithAttribution, copy.deepcopy(rotationPerformed))
 
+def mutateRotation(rotation):
+    nRotation = []
+    for spell in rotation:
+        if random.uniform(0.00, 1.00) < GA_GLOBAL_MUTATION_RATE:
+            nRotation.append(copy.deepcopy(random.choice(spellDatabase)))
+        else: nRotation.append(copy.deepcopy(spell))
+    return nRotation
+
+def mutateDpsRecord(entry):
+    nRotation = mutateRotation(entry[2])
+    return (entry[0], entry[1], nRotation)
+
+def blendRotations(mother, father):
+    nChild = []
+    for motherSpell,fatherSpell in zip(mother,father):
+        nChild.append(copy.deepcopy(random.choice([motherSpell,fatherSpell])))
+    return (None, None, nChild)
+
+# Bootstrap phase
 forest = generateRotations()
+
+highestAttainedFitness = -1 * math.inf
 simResults = []
 dpsAnalysis = []
+postMutation = []
+postBlend = []
+iterCount = 0
 
-with ThreadPoolExecutor() as simExecutor:
-    jobs = []
-    for i in range(0,len(forest)):
-        jobs.append(simExecutor.submit(simulateRotation, forest[i]))
-    for job in jobs:
-        simResults.append(job.result())
+def doCycle():
+    global highestAttainedFitness
+    global simResults
+    global dpsAnalysis
+    global postMutation
+    global postBlend
+    global iterCount
+    with ThreadPoolExecutor() as simExecutor:
+        jobs = []
+        for i in range(0,len(forest)):
+            jobs.append(simExecutor.submit(simulateRotation, forest[i]))
+        for job in jobs:
+            simResults.append(job.result())
 
-with ThreadPoolExecutor() as dpsExecutor:
-    jobs = []
-    for i in range(0,len(simResults)):
-        jobs.append(dpsExecutor.submit(analyzeRotation, *simResults[i]))
-    for job in jobs:
-        dpsAnalysis.append(job.result())
+    with ThreadPoolExecutor() as dpsExecutor:
+        jobs = []
+        for i in range(0,len(simResults)):
+            jobs.append(dpsExecutor.submit(analyzeRotation, *simResults[i]))
+        for job in jobs:
+            dpsAnalysis.append(job.result())
 
-dpsAnalysis = list( filter(lambda x: x[0] > GA_GRADBOOST_AUTOCULL, dpsAnalysis) )
-dpsAnalysis.sort(key=lambda x: x[0], reverse=True)
-dpsAnalysis = dpsAnalysis[0:int(len(dpsAnalysis)*GA_CULL_PERCENT)]
+    dpsAnalysis = list( filter(lambda x: x[0] > GA_GRADBOOST_AUTOCULL, dpsAnalysis) )
+    dpsAnalysis.sort(key=lambda x: x[0], reverse=True)
+    dpsAnalysis = dpsAnalysis[0:int(len(dpsAnalysis)*GA_CULL_PERCENT)]
+    highestAttainedFitness = max(highestAttainedFitness, dpsAnalysis[0][0])
 
-# mutate here
+    with ThreadPoolExecutor() as mutationExecutor:
+        jobs = []
+        for i in range(0,len(dpsAnalysis)):
+            jobs.append(mutationExecutor.submit(mutateDpsRecord, dpsAnalysis[i]))
+        for job in jobs:
+            postMutation.append(job.result())
 
-# blend here
+    with ThreadPoolExecutor() as blendExecutor:
+        jobs = []
+        for i in range(0,GA_FOREST_SIZE-len(postMutation)):
+            jobs.append(blendExecutor.submit(blendRotations, random.choice(postMutation)[2], random.choice(postMutation)[2]))
+        for job in jobs:
+            postBlend.append(job.result())
+    postBlend = postBlend + postMutation
 
-# continue cycle here
+while highestAttainedFitness < 0:
+    doCycle()
+    iterCount += 1
+    print('Generation {i} finished.'.format(i=iterCount))
+    if iterCount % 10 == 0:
+        print('Decade reached...')
+
 
 pass
