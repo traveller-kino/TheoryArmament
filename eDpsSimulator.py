@@ -26,6 +26,7 @@ from concurrent.futures import ThreadPoolExecutor
 import copy
 import pandas as pd
 
+
 N_DEBUG = False
 eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 
@@ -33,8 +34,8 @@ eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
 GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
 GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitnessTarget - fitness # Can change to any error-penalizing function you want (e.g. squared error)
-GA_FOREST_SIZE =                1000        # How many rotations to work with
-GA_GRADBOOST_AUTOCULL =         64.80        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
+GA_FOREST_SIZE =                10        # How many rotations to work with
+GA_GRADBOOST_AUTOCULL =         44.55        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
 GA_FITNESS_TARGET =             120.00      # Instantly terminate the simulation upon reaching this value (may be impossible)
 
 # Simulation Parameters
@@ -135,18 +136,43 @@ def simulateRotation(rotation):
     return (damageAttributions, rotationPerformed)
 
 def analyzeRotation(damageAttributions, rotationPerformed):
-    totalDamageWithAttribution = b[0].groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
-    totalGeneralDamage = b[0].sum(numeric_only=True).drop('Timestamp')
+    totalDamageWithAttribution = damageAttributions.groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
+    totalGeneralDamage = damageAttributions.sum(numeric_only=True).drop('Timestamp')
     totalGeneralDps = (SIM_ADVANCE_RETARD * totalGeneralDamage['Damage']) / (SIM_RUNTIME / 1000)
 
     fitness = GA_FITNESS_FUNCTION(GA_FITNESS_TARGET, totalGeneralDps)
+
     prettyPrintRotationPerformed = []
     for spell in rotationPerformed:
         prettyPrintRotationPerformed.append(spell['SpellName'])
     return (fitness, totalDamageWithAttribution, rotationPerformed, prettyPrintRotationPerformed)
 
-a = generateRotation()
-b = simulateRotation(a)
-c = analyzeRotation(*b)
+forest = generateRotations()
+simResults = []
+dpsAnalysis = []
+
+with ThreadPoolExecutor() as simExecutor:
+    jobs = []
+    for i in range(0,len(forest)):
+        jobs.append(simExecutor.submit(simulateRotation, forest[i]))
+    for job in jobs:
+        simResults.append(job.result())
+
+with ThreadPoolExecutor() as dpsExecutor:
+    jobs = []
+    for i in range(0,len(simResults)):
+        jobs.append(dpsExecutor.submit(analyzeRotation, *simResults[i]))
+    for job in jobs:
+        dpsAnalysis.append(job.result())
+
+dpsAnalysis = list( filter(lambda x: x[0] > GA_GRADBOOST_AUTOCULL, dpsAnalysis) )
+dpsAnalysis.sort(key=lambda x: x[0], reverse=True)
+dpsAnalysis = dpsAnalysis[0:int(len(dpsAnalysis)*GA_CULL_PERCENT)]
+
+# mutate here
+
+# blend here
+
+# continue cycle here
 
 pass
