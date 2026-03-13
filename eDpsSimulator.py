@@ -24,8 +24,9 @@ import random
 import json
 from concurrent.futures import ThreadPoolExecutor
 import copy
+import pandas as pd
 
-N_DEBUG = True
+N_DEBUG = False
 eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 
 # Genetic Algorithm Parameters
@@ -38,9 +39,9 @@ GA_GRADBOOST_AUTOCULL =         4.00        # Automatically cull & replace rotat
 # Simulation Parameters
 SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
 SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
-SIM_TIMING_EPSILON =        500.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
+SIM_TIMING_EPSILON =        10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
-SIM_RUNTIME =               30000.00    # How long to simulate the rotation
+SIM_RUNTIME =               300000.00    # How long to simulate the rotation
 SIM_ROTATION_SIZE =         1000        # How deep to generate a rotation
 
 """
@@ -85,7 +86,8 @@ def simulateRotation(rotation):
     currentTime =   0.00
     terminalTime =  SIM_RUNTIME
 
-    damageAttributions = []
+    damageAttributions = pd.DataFrame(columns=['Timestamp', 'SpellName', 'Damage'])
+    rotationPerformed = []
 
     interdictedTill = -0.01
     activeSpells = []
@@ -95,23 +97,23 @@ def simulateRotation(rotation):
         for spell in activeSpells:
             spell['Timing'][1] -= SIM_TIMING_EPSILON
             if spell['Timing'][1] <= 0.00:
-                    damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))) )
+                    #damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))) )
+                    damageAttributions.loc[len(damageAttributions)] = {'Timestamp': currentTime, 'SpellName': spell['SpellName'], 'Damage': spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))}
                     spellsToRemove.append(spell)
         for spellToRemove in spellsToRemove: # remove() does not work while iterating on the parent list
             activeSpells.remove(spellToRemove)
             print(eventLogAnchor.format(Timestamp=currentTime,Activity='Lapsed',SpellName=spellToRemove['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
         spellsToRemove = [] # Clear it out
 
-        pass
-
         if currentTime <= interdictedTill: # Simulating animation lock
             currentTime += SIM_TIMING_EPSILON
             continue
         else:
             spell = rotation.pop(0)
+            rotationPerformed.append(copy.deepcopy(spell))
             if spell['Interdicting'] == True:
                 interdictedTill = currentTime + spell['Timing'][1]
-            activeSpells.append(spell) # logic error here?
+            activeSpells.append(spell)
             print(eventLogAnchor.format(Timestamp=currentTime,Activity='Activated',SpellName=spell['SpellName'],Timestamp2=currentTime+spell['Timing'][1])) if N_DEBUG else ''
 
             for sSpell in spell['SecondaryEffect']:
@@ -129,10 +131,12 @@ def simulateRotation(rotation):
                 
         currentTime += SIM_TIMING_EPSILON
 
-    return damageAttributions
+    return (damageAttributions, rotationPerformed)
 
 
 a = generateRotation()
 b = simulateRotation(a)
 
+nDf = b[0].groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
+print(str(b[1]))
 pass
