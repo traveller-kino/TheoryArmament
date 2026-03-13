@@ -75,9 +75,29 @@ def blendRotations(mother, father):
         nChild.append(random.choice([motherSpell,fatherSpell]))
     return nChild
 
-def simulateRotation(): # TODO: link up to 
-    pass
+def simulateRotation(rotation):
+    currentTime =   0.00
+    terminalTime =  SIM_RUNTIME
+    damageAttributions = [] # need to add proper damage attribution so people can drill down
+    # simulation timestamp, damage source, potency
+    interdictedTill = -0.01
+    activeSpells = []
+    while currentTime < terminalTime:
+        
+        # check to see if spell effect has elapsed (add to damage attribution)
 
-a = generateRotations()
+        if currentTime < interdictedTill: # Simulating animation lock + projectile to enemy
+            currentTime += SIM_TIMING_EPSILON
+            continue
+
+        # check to see if it is time for a new spell, if so, activate it
+
+        currentTime += terminalTime
+
+    return False
+
+
+a = generateRotation()
+b = simulateRotation(a)
 
 pass
