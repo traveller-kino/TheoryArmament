@@ -34,14 +34,15 @@ GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom ha
 GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
 GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitnessTarget - fitness # Can change to any error-penalizing function you want (e.g. squared error)
 GA_FOREST_SIZE =                1000        # How many rotations to work with
-GA_GRADBOOST_AUTOCULL =         4.00        # Automatically cull & replace rotations falling below this DPS threshold (ideally 75% of best known rotation)
+GA_GRADBOOST_AUTOCULL =         64.80        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
+GA_FITNESS_TARGET =             120.00      # Instantly terminate the simulation upon reaching this value (may be impossible)
 
 # Simulation Parameters
 SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
 SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
 SIM_TIMING_EPSILON =        10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
-SIM_RUNTIME =               300000.00    # How long to simulate the rotation
+SIM_RUNTIME =               600000.00    # How long to simulate the rotation
 SIM_ROTATION_SIZE =         1000        # How deep to generate a rotation
 
 """
@@ -133,10 +134,19 @@ def simulateRotation(rotation):
 
     return (damageAttributions, rotationPerformed)
 
+def analyzeRotation(damageAttributions, rotationPerformed):
+    totalDamageWithAttribution = b[0].groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
+    totalGeneralDamage = b[0].sum(numeric_only=True).drop('Timestamp')
+    totalGeneralDps = (SIM_ADVANCE_RETARD * totalGeneralDamage['Damage']) / (SIM_RUNTIME / 1000)
+
+    fitness = GA_FITNESS_FUNCTION(GA_FITNESS_TARGET, totalGeneralDps)
+    prettyPrintRotationPerformed = []
+    for spell in rotationPerformed:
+        prettyPrintRotationPerformed.append(spell['SpellName'])
+    return (fitness, totalDamageWithAttribution, rotationPerformed, prettyPrintRotationPerformed)
 
 a = generateRotation()
 b = simulateRotation(a)
+c = analyzeRotation(*b)
 
-nDf = b[0].groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
-print(str(b[1]))
 pass
