@@ -48,8 +48,6 @@ TargetIdsAffected   Some effects hit "certain targets", while "avoiding others";
 SecondaryEffect     Secondary spell effects, as spells themselves
 """
 
-# TODO: randomly generate rotation
-# TODO: blend rotations via crossover
 # TODO: evaluate rotations ('the meat' of the programming)
 
 spellDatabaseFile = open('./spellDb.json', 'r')
