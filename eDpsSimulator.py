@@ -28,15 +28,16 @@ from concurrent.futures import ThreadPoolExecutor
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
 GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
 GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitnessTarget - fitness # Can change to any error-penalizing function you want (e.g. squared error)
+GA_FOREST_SIZE =                1000        # How many rotations to work with
+GA_GRADBOOST_AUTOCULL =         4.00        # Automatically cull & replace rotations falling below this DPS threshold (ideally 75% of best known rotation)
 
 # Simulation Parameters
-SIM_TARGETS =           5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
-SIM_ADVANCE_RETARD =    1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
-SIM_TIMING_EPSILON =    10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
-SIM_DROP_CAST_CHANCE =  0.01        # Chance for spell to whiff
-SIM_RUNTIME =           30000.00    # How long to simulate the rotation
-SIM_ROTATION_SIZE =     1000        # How deep to generate a rotation
-SIM_FOREST_SIZE =       1000        # How many rotations to work with
+SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
+SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
+SIM_TIMING_EPSILON =        500.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
+SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
+SIM_RUNTIME =               30000.00    # How long to simulate the rotation
+SIM_ROTATION_SIZE =         1000        # How deep to generate a rotation
 
 """
 SpellDB Fields
@@ -59,7 +60,7 @@ def generateRotation():
         nRotation.append(random.choice(spellDatabase))
     return nRotation
 
-def generateRotations(count=SIM_FOREST_SIZE):
+def generateRotations(count=GA_FOREST_SIZE):
     allRotations = []
     with ThreadPoolExecutor() as executor:
         jobs = []
@@ -78,23 +79,38 @@ def blendRotations(mother, father):
 def simulateRotation(rotation):
     currentTime =   0.00
     terminalTime =  SIM_RUNTIME
-    damageAttributions = [] # need to add proper damage attribution so people can drill down
-    # simulation timestamp, damage source, potency
+
+    damageAttributions = []
+
     interdictedTill = -0.01
     activeSpells = []
-    while currentTime < terminalTime:
-        
-        # check to see if spell effect has elapsed (add to damage attribution)
 
-        if currentTime < interdictedTill: # Simulating animation lock + projectile to enemy
+    while currentTime < terminalTime:
+        spellsToRemove = []
+        for spell in activeSpells:
+            spell['Timing'][1] -= SIM_TIMING_EPSILON
+            if spell['Timing'][1] <= 0.00:
+                damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']) )
+                spellsToRemove.append(spell)
+        for spellToRemove in spellsToRemove: # remove() does not work while iterating on the parent list
+            activeSpells.remove(spellToRemove)
+        spellsToRemove = [] # Clear it out
+
+        pass
+
+        if currentTime < interdictedTill: # Simulating animation lock
             currentTime += SIM_TIMING_EPSILON
             continue
+        else:
+            spell = rotation.pop(0)
+            if spell['Interdicting'] == True:
+                interdictedTill = currentTime + spell['Timing'][1]
+            activeSpells.append(spell)
+            # add secondary effects
 
-        # check to see if it is time for a new spell, if so, activate it
+        currentTime += SIM_TIMING_EPSILON
 
-        currentTime += terminalTime
-
-    return False
+    return damageAttributions
 
 
 a = generateRotation()
