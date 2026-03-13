@@ -22,18 +22,21 @@ import csv
 import math
 import random
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 # Genetic Algorithm Parameters
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
 GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
 GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitnessTarget - fitness # Can change to any error-penalizing function you want (e.g. squared error)
-GA_CROSSOVER_FUNCTION =         lambda motherSpell,fatherSpell: random.choice([motherSpell, fatherSpell]) # Crossover: for rotation slots in common, keep. Otherwise, randomly choose between the two.
 
 # Simulation Parameters
 SIM_TARGETS =           5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
 SIM_ADVANCE_RETARD =    1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
 SIM_TIMING_EPSILON =    10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =  0.01        # Chance for spell to whiff
+SIM_RUNTIME =           30000.00    # How long to simulate the rotation
+SIM_ROTATION_SIZE =     1000        # How deep to generate a rotation
+SIM_FOREST_SIZE =       1000        # How many rotations to work with
 
 """
 SpellDB Fields
@@ -52,6 +55,31 @@ SecondaryEffect     Secondary spell effects, as spells themselves
 spellDatabaseFile = open('./spellDb.json', 'r')
 spellDatabase = json.load(spellDatabaseFile)
 
-print('Dynamometer has started running...')
-print(str(GA_CROSSOVER_FUNCTION('poison brace', 'fire arrow')))
+def generateRotation():
+    nRotation = []
+    for i in range(0, SIM_ROTATION_SIZE):
+        nRotation.append(random.choice(spellDatabase))
+    return nRotation
 
+def generateRotations(count=SIM_FOREST_SIZE):
+    allRotations = []
+    with ThreadPoolExecutor() as executor:
+        jobs = []
+        for i in range(0,count):
+            jobs.append(executor.submit(generateRotation))
+        for job in jobs:
+            allRotations.append(job.result())
+    return allRotations
+
+def blendRotations(mother, father):
+    nChild = []
+    for motherSpell,fatherSpell in zip(mother,father):
+        nChild.append(random.choice([motherSpell,fatherSpell]))
+    return nChild
+
+def simulateRotation(): # TODO: link up to 
+    pass
+
+a = generateRotations()
+
+pass
