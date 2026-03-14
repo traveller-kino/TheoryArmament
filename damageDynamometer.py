@@ -11,6 +11,12 @@ import time
 
 spellDatabaseFile = open('./spellDb.json', 'r')
 spellDatabase = json.load(spellDatabaseFile)
+spellIndex = {}
+for spell in spellDatabase:
+    spellIndex[spell['SpellName']] = spell
+
+pass
+
 # Note need to stop editing spells directly, and use an associative array for tracking time expirations
 
 # Simulation Parameters
@@ -31,5 +37,15 @@ SecondaryEffect     Secondary spell effects, as spells
 Unique              Whether or not the spell needs to wear off before re-applying
 """
 
+def readRotation(filename):
+    rotation = []
+    theFile = open(filename, 'r')
+    csvRotation = csv.reader(theFile)
+    for row in csvRotation: # Note: row is an array of comma seperated values (so, row[0] is needed)
+        rotation.append(spellIndex[row[0]])
+    theFile.close()
+    return rotation
+
+readRotation('./rotation.csv')
 
 pass
