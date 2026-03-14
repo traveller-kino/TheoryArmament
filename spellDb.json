@@ -13,14 +13,72 @@
         "Interdicting": false,
         "TargetIdsAffected": [1,2,3,4],
         "Unique": true
-    }, {
+    }, 
+    {
         "SpellName": "Poison Brace (damage over time)",
-        "Potency": 22.50,
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 1000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 2000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 3000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 4000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 5000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 6000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
+        "TimingOffset": [0.00, 7000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2,3,4],
+        "Unique": true
+    },
+    {
+        "SpellName": "Poison Brace (damage over time)",
+        "Potency": 2.8125,
         "TimingOffset": [0.00, 8000.00],
         "Interdicting": false,
         "TargetIdsAffected": [0,1,2,3,4],
         "Unique": true
-    }]
+    }
+    ]
 },
 {
     "SpellName": "Fire Arrow (explosion)",
@@ -31,12 +89,29 @@
     "TargetIdsAffected": [0,1,2],
         "SecondaryEffect": [{
         "SpellName": "Fire Arrow (damage over time)",
-        "Potency": 30.00,
+        "Potency": 10.00,
+        "TimingOffset": [0.00, 1000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2],
+        "Unique": true
+    },
+    {
+        "SpellName": "Fire Arrow (damage over time)",
+        "Potency": 10.00,
+        "TimingOffset": [0.00, 2000.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0,1,2],
+        "Unique": true
+    },
+    {
+        "SpellName": "Fire Arrow (damage over time)",
+        "Potency": 10.00,
         "TimingOffset": [0.00, 3000.00],
         "Interdicting": false,
         "TargetIdsAffected": [0,1,2],
         "Unique": true
-    }]
+    }
+    ]
 },
 {
     "SpellName": "Magic Claw (hitscan)",
@@ -46,12 +121,21 @@
     "Unique": false,
     "TargetIdsAffected": [0],
         "SecondaryEffect": [{
-        "SpellName": "Magic Claw (two hits)",
+        "SpellName": "Magic Claw (first hit)",
+        "Potency": 40.00,
+        "TimingOffset": [0.00, 150.00],
+        "Interdicting": false,
+        "TargetIdsAffected": [0],
+        "Unique": true
+    },
+    {
+        "SpellName": "Magic Claw (second hit)",
         "Potency": 40.00,
         "TimingOffset": [0.00, 300.00],
         "Interdicting": false,
         "TargetIdsAffected": [0],
         "Unique": true
-    }]
+    }
+    ]
 }
 ]
