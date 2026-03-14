@@ -25,17 +25,19 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import copy
 import pandas as pd
-
+import pickle
+import bz2
+import time
 
 N_DEBUG = False
 eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
 
 # Genetic Algorithm Parameters
 GA_CULL_PERCENT =               0.50 # Rank rotations by DPS, drop the bottom half, and start breeding
-GA_GLOBAL_MUTATION_RATE =       0.001 # For each spell in a rotation: random chance to any known spell
+GA_GLOBAL_MUTATION_RATE =       0.05 # For each spell in a rotation: random chance to any known spell
 GA_FITNESS_FUNCTION =           lambda fitnessTarget,fitness: fitness - fitnessTarget # Can change to any error-penalizing function you want (e.g. squared error)
-GA_FOREST_SIZE =                100        # How many rotations to work with
-GA_GRADBOOST_AUTOCULL =         -64.85        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
+GA_FOREST_SIZE =                10        # How many rotations to work with
+GA_GRADBOOST_AUTOCULL =         -65.00        # Automatically cull & replace rotations falling below this DPS threshold (ideally 90% of best known rotation)
 GA_FITNESS_TARGET =             120.00      # Instantly terminate the simulation upon reaching this value (may be impossible)
 
 # Simulation Parameters
@@ -44,7 +46,7 @@ SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timin
 SIM_TIMING_EPSILON =        10.00       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
 SIM_RUNTIME =               600000.00    # How long to simulate the rotation
-SIM_ROTATION_SIZE =         300        # How deep to generate a rotation
+SIM_ROTATION_SIZE =         500        # How deep to generate a rotation
 
 """
 SpellDB Fields
@@ -79,7 +81,8 @@ def generateRotations(count=GA_FOREST_SIZE):
     return allRotations
 
 def simulateRotation(rotation):
-    rotation = copy.deepcopy(rotation)
+    rotationCopy = copy.deepcopy(rotation)
+    nRotation = copy.deepcopy(rotation)
     currentTime =   0.00
     terminalTime =  SIM_RUNTIME
 
@@ -94,10 +97,9 @@ def simulateRotation(rotation):
         for spell in activeSpells:
             spell['Timing'][1] -= SIM_TIMING_EPSILON
             if spell['Timing'][1] <= 0.00:
-                    #damageAttributions.append( (currentTime, spell['SpellName'], spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))) )
                     damageAttributions.loc[len(damageAttributions)] = {'Timestamp': currentTime, 'SpellName': spell['SpellName'], 'Damage': spell['Potency']*min(SIM_TARGETS,len(spell['TargetIdsAffected']))}
                     spellsToRemove.append(spell)
-        for spellToRemove in spellsToRemove: # remove() does not work while iterating on the parent list
+        for spellToRemove in spellsToRemove:
             activeSpells.remove(spellToRemove)
             print(eventLogAnchor.format(Timestamp=currentTime,Activity='Lapsed',SpellName=spellToRemove['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
         spellsToRemove = [] # Clear it out
@@ -107,7 +109,7 @@ def simulateRotation(rotation):
             continue
         else:
             # add spell whiff logic here (if succeeded, interdict and continue)
-            spell = rotation.pop(0)
+            spell = nRotation.pop(0)
             rotationPerformed.append(copy.deepcopy(spell))
             if spell['Interdicting'] == True:
                 interdictedTill = currentTime + spell['Timing'][1]
@@ -128,7 +130,7 @@ def simulateRotation(rotation):
                     print(eventLogAnchor.format(Timestamp=currentTime,Activity='SUPPRESSED',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
                 
         currentTime += SIM_TIMING_EPSILON
-    return (damageAttributions, copy.deepcopy(rotationPerformed))
+    return (damageAttributions, copy.deepcopy(rotationPerformed + rotation[len(rotationPerformed):]))
 
 def analyzeRotation(damageAttributions, rotationPerformed):
     totalDamageWithAttribution = damageAttributions.groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
@@ -176,8 +178,13 @@ def doCycle():
     global iterCount
     with ThreadPoolExecutor() as simExecutor:
         jobs = []
-        for i in range(0,len(forest)):
-            jobs.append(simExecutor.submit(simulateRotation, forest[i]))
+        if iterCount == 0:
+            for i in range(0,len(forest)):
+                jobs.append(simExecutor.submit(simulateRotation, forest[i]))
+        else:
+            for i in range(0,len(postBlend)):
+                jobs.append(simExecutor.submit(simulateRotation, postBlend[i][2]))
+                
         for job in jobs:
             simResults.append(job.result())
 
@@ -207,13 +214,20 @@ def doCycle():
         for job in jobs:
             postBlend.append(job.result())
     postBlend = postBlend + postMutation
+    simResults = simResults[-GA_FOREST_SIZE:]
+    dpsAnalysis = dpsAnalysis[-GA_FOREST_SIZE:]
+    postMutation = postMutation[-GA_FOREST_SIZE:]
+    postBlend = postBlend[-GA_FOREST_SIZE:]
+
 
 while highestAttainedFitness < 0:
     doCycle()
     iterCount += 1
-    print('Generation {i} finished.'.format(i=iterCount))
-    if iterCount % 10 == 0:
-        print('Decade reached...')
+    print('Generation {i} finished with fitness:\t{fitness}.'.format(i=iterCount, fitness=dpsAnalysis[0][0]))
+    if iterCount % 50 == 0:
+        with bz2.open( './specimens/' + str(int(time.time()))+"dpsAnalysis.pkl.bz2", "wb") as f:
+            pickle.dump(dpsAnalysis[0], f)
+        print('Epoch reached, with highest fitness:\t{fitness}'.format(fitness=dpsAnalysis[0][0]))
 
 
 pass
