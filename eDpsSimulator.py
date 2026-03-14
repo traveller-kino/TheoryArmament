@@ -55,7 +55,7 @@ Potency             Effective base damage (i.e. base damage * probability)
 Timing              Time from start of cast to hit on enemy (usually 2-3 seconds)
 Interdicting        Whether or not the cast is active
 TargetIdsAffected   Some effects hit "certain targets", while "avoiding others"; some effects are mutually exclusive. Fixed enemy IDs are used to keep track of this.
-SecondaryEffect     Secondary spell effects, as spells themselves
+SecondaryEffect     Secondary spell effects, as spells
 Unique              Whether or not the spell needs to wear off before re-applying
 """
 
