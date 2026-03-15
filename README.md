@@ -1,3 +1,4 @@
+# YAMETE KUDASTOOOOOP! These numbers are obsolete, as I need to re-run the sims
 # Rotation simulation (currently for F/P Mages)
 Note: this is not for "MapleStory at home" ;) (not that you'd roll F/P anyway), this is for the upcoming Classic World, with the information we know.
 
