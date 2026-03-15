@@ -73,7 +73,7 @@ First Job Advancement
 * MAX       -       MAX MP Increase         - 26-30
 
 Important effects
-* Improved MP Recovery: yields +2-3.00 MP/s (target: 11.666 MP/s)
+* Improved MP Recovery: yields +2-3.00 MP/s
 
 Second Job Advancement
 * 1 pt.     -   Teleport        - 30
@@ -87,11 +87,19 @@ Important effects
 * MP Eater: yields +7.5 MP/s
 
 With a target of 11.666 MP/s, this build would reach c. -2.166 to -1.166 MP/s
+
 As a frame of reference:
+
 The base MP/s equates to one Mana Elixir every 25.71 seconds
+
 The bottom band equates to one Mana Elixir every 2 minutes, 18 seconds
+
 The top band equates to one Mana Elixir every 4 minutes, 18 seconds
+
 In mesos (620/elixir):
+
 Base MP/s:          24.11 mesos/second
+
 Bottom band MP/s:   4.49 mesos/second
+
 Top band MP/s:      2.40 mesos/second
