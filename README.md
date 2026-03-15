@@ -17,6 +17,35 @@ Current simulator results of interest:
 
 *Figures are in base damage per second (internally called "Potency")*
 
-Special note: "eco mode" is casting Poison Brace & Fire Arrow, and waiting for the poison DoT to expire. While it isn't particularly good, it's interesting knowing it's only c. 40% less than other rotations.
+Special note: "Eco Mode" is casting Poison Brace & Fire Arrow, and waiting for the poison DoT to expire. While it isn't particularly good, it's interesting knowing it's only c. 40% less than other rotations.
 
 Alternating Poison Brace & Fire Arrow results in the highest DPS. This makes sense, especially in a "live" environment, as this maximizes instantaneous damage, and mobs with DoTs ticking on them (since more will be spawning in constantly).
+
+| Pattern / Efficiency Metric | AVG MP/S | DMG/MP           |
+|-----------------------------|----------|------------------|
+| **Eco Mode**                | 6.363636 | 5.57223904698509 |
+| ABBB                        | 10.8333  | 5.39190119908061 |
+| **Fire Arrow (B)**          | 10       | 5.13399998       |
+| **ABABAB**                  | 11.6666  | 5.12686856839182 |
+| ABx4                        | 10.6666  | 5.11878011737573 |
+| ABB                         | 11.1111  | 4.78549227349227 |
+| BAA                         | 12.2222  | 4.58445140809347 |
+| BAAA                        | 12.5     | 4.43676568       |
+| **Poison Brace (A)**        | 13.3333  | 3.81824391560979 |
+
+No surprises with Eco Mode. Fire Arrow only comes just ahead of the highest DPS pattern, so this is good indication that dual F/P mages in Classic World should **max Fire Arrow first**. 
+
+I propose a skill point allocation along the lines of:
+
+* Kino's Build *
+* 1 pt. -       Teleport        - 30
+* MAX -         Fire Arrow      - 31-40
+* MAX -         Teleport        - 41-47
+* MAX -         Poison Brace    - 47-57
+* 3 pts. -      MP Eater        - 57-58
+* MAX -         Meditation      - 58-64
+* 18 pts. -     Slow            - 65-70
+
+Teleport is your best damage mitigation, so grab that first. Then, max Fire Arrow ASAP to maximize damage. Finish off Teleport, because you are a mage. Max out Poison Brace next, so you can start doing the ABABAB rotation. Limp in to MP Eater, because it is nearly worthless in practice†. Max Meditation (unless you are doing a greed build) to boost group DPS. Finish with Slow, because it is still helpful sometimes (whether Myst benefits from it is still hotly debated).
+
+† With probabilities and % Max MP, MP Eater has a quarter of the mob's max mp to work off of. So for a mob with 150 MP (i.e. Dark/Hybrid Golems), MP Eater has 37.5 MP to eat, equating to +7.5 MP/s. By adjusting the timing of Eco Mode, (i.e. Poison Brace at second zero, and Fire Arrow at second five), it may just barely be MP-postive (with perfect technique). But unless potion economy is a huge deal in Classic World, you are always better off **always casting**. Additionally, you will be kicked very quickly from a party if you limp your DPS.
