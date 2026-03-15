@@ -37,7 +37,7 @@ No surprises with Eco Mode. Fire Arrow only comes just ahead of the highest DPS 
 
 I propose a skill point allocation along the lines of:
 
-* Kino's Build *
+*Kino's Build*
 * 1 pt. -       Teleport        - 30
 * MAX -         Fire Arrow      - 31-40
 * MAX -         Teleport        - 41-47
