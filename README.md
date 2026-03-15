@@ -14,6 +14,7 @@ Current simulator results of interest:
 | **Fire Arrow (B)**            	| 21.433333 	| 42.866666  	| 64.3       	| 63.7    	| 64.4      	|   	| 51.3399998  	| 64.4      	|
 | **Poison Brace (A)**          	| 26.625    	| 39.627083  	| 53.446875  	| 66.8625 	| 67.9875   	|   	| 50.9097916  	| 67.9875   	|
 | **Eco Mode**                  	| 15.58333  	| 27.6333    	| 40.64125   	| 45.75   	| 47.690625 	|   	| 35.459701   	| 47.690625 	|
+*Figures are in base damage per second (internally called "Potency")*
 
 Special note: "eco mode" is casting Poison Brace & Fire Arrow, and waiting for the poison DoT to expire. While it isn't particularly good, it's interesting knowing it's only c. 40% less than other rotations.
 Alternating Poison Brace & Fire Arrow results in the highest DPS. This makes sense, especially in a "live" environment, as this maximizes instantaneous damage, and mobs with DoTs ticking on them (since more will be spawning in constantly).
