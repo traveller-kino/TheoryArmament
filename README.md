@@ -84,22 +84,30 @@ Second Job Advancement
 * MAX       -   Meditation      - 64-70
 
 Important effects
-* MP Eater: yields +7.5 MP/s
+* MP Eater: yields +9 MP/s (boosted by Improved MP Recovery, base +7.5 MP/s)
 
-With a target of 11.666 MP/s, this build would reach c. -2.166 to -1.166 MP/s
+With a target of 11.666 MP/s, this build would reach c. -0.666 to 0.334 MP/s
 
 As a frame of reference:
 
 The base MP/s equates to one Mana Elixir every 25.71 seconds
 
-The bottom band equates to one Mana Elixir every 2 minutes, 18 seconds
+The bottom band equates to one Mana Elixir every 7.5 minutes
 
-The top band equates to one Mana Elixir every 4 minutes, 18 seconds
+The top band will never need potions
 
 In mesos (620/elixir):
 
 Base MP/s:          24.11 mesos/second
 
-Bottom band MP/s:   4.49 mesos/second
+Bottom band MP/s:   1.37 mesos/second
 
-Top band MP/s:      2.40 mesos/second
+Top band MP/s:      0.00 mesos/second
+
+If Improved MP Recovery does not boost MP Eater:
+
+Base MP/s: 24.11 mesos/second
+
+Bottom band MP/s: 4.49 mesos/second
+
+Top band MP/s: 2.40 mesos/second
