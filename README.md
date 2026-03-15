@@ -54,7 +54,44 @@ I still wouldn't use or rely on Eco Mode for several reasons:
 * You can only use the Eco Mode rotation starting at level 57, which by now, mobs drop 100+ mesos each
 * You would still need to stat into MP Eater to be mana-positive (probably c. level 62)
 * So, you only get eight "efficient" levels before you gain access to skills that blow this out of the water
-* Even still: DPS = Dead Mobs = Mesos and junk drops = Potions
+* Even still: DPS = Dead mobs = Mesos and junk drops = Potions
 * Starting at level 70, mobs have dramatically higher HP, compared to the EXP they give, making DPS the most important consideration
 * People will not party with you
 * Eco Mode won't apply DoTs to any new mobs that spawn in between casts
+
+However, this does lead to an idea of a forbidden MP-neutral build... So, in theory:
+
+(Assumptions: Max MP will be c. 2000-3000)
+
+*Eureka Build*
+
+First Job Advancement
+* 1 pt.     -       Energy Bolt             - 10
+* 15 pts.   -       Magic Claw              - 11-15
+* MAX       -       Magic Guard             - 16-20
+* MAX       -       Improved MP Recovery    - 21-25
+* MAX       -       MAX MP Increase         - 26-30
+
+Important effects
+* Improved MP Recovery: yields +2-3.00 MP/s (target: 11.666 MP/s)
+
+Second Job Advancement
+* 1 pt.     -   Teleport        - 30
+* MAX       -   Fire Arrow      - 31-40
+* MAX       -   Teleport        - 41-47
+* MAX       -   Poison Brace    - 47-57
+* MAX       -   MP Eater        - 57-63
+* MAX       -   Meditation      - 64-70
+
+Important effects
+* MP Eater: yields +7.5 MP/s
+
+With a target of 11.666 MP/s, this build would reach c. -2.166 to -1.166 MP/s
+As a frame of reference:
+The base MP/s equates to one Mana Elixir every 25.71 seconds
+The bottom band equates to one Mana Elixir every 2 minutes, 18 seconds
+The top band equates to one Mana Elixir every 4 minutes, 18 seconds
+In mesos (620/elixir):
+Base MP/s:          24.11 mesos/second
+Bottom band MP/s:   4.49 mesos/second
+Top band MP/s:      2.40 mesos/second
