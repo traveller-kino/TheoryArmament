@@ -33,7 +33,7 @@ Alternating Poison Brace & Fire Arrow results in the highest DPS. This makes sen
 | BAAA                        | 12.5     | 4.43676568       |
 | **Poison Brace (A)**        | 13.3333  | 3.81824391560979 |
 
-No surprises with Eco Mode. Fire Arrow only comes just ahead of the highest DPS pattern, so this is good indication that dual F/P mages in Classic World should **max Fire Arrow first**. 
+No surprises with Eco Mode. Fire Arrow only comes just ahead of the highest DPS pattern, so this is good indication that dual F/P mages in Classic World should **max Fire Arrow first**, because the DPS is better than Poison Brace only, and is more MP efficient. 
 
 I propose a skill point allocation along the lines of:
 
