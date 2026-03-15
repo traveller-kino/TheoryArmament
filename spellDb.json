@@ -11,7 +11,7 @@
         "Potency": 35.00,
         "TimingOffset": [0.00, 0.01],
         "Interdicting": false,
-        "TargetIdsAffected": [1,2,3,4],
+        "TargetIdsAffected": [0,1,2,3,4],
         "Unique": false
     }, 
     {
