@@ -49,3 +49,12 @@ I propose a skill point allocation along the lines of:
 Teleport is your best damage mitigation, so grab that first. Then, max Fire Arrow ASAP to maximize damage. Finish off Teleport, because you are a mage. Max out Poison Brace next, so you can start doing the ABABAB rotation. Limp in to MP Eater, because it is nearly worthless in practice†. Max Meditation (unless you are doing a greed build) to boost group DPS. Finish with Slow, because it is still helpful sometimes (whether Myst benefits from it is still hotly debated).
 
 † With probabilities and % Max MP, MP Eater has a quarter of the mob's max mp to work off of. So for a mob with 150 MP (i.e. Dark/Hybrid Golems), MP Eater has 37.5 MP to eat, equating to +7.5 MP/s. By adjusting the timing of Eco Mode, (i.e. Poison Brace at second zero, and Fire Arrow at second five), it may just barely be MP-postive (with perfect technique). But unless potion economy is a huge deal in Classic World, you are always better off **always casting**. Additionally, you will be kicked very quickly from a party if you limp your DPS.
+
+I still wouldn't use or rely on Eco Mode for several reasons:
+* You can only use the Eco Mode rotation starting at level 57, which by now, mobs drop 100+ mesos each
+* You would still need to stat into MP Eater to be mana-positive (probably c. level 62)
+* So, you only get eight "efficient" levels before you gain access to skills that blow this out of the water
+* Even still: DPS = Dead Mobs = Mesos and junk drops = Potions
+* Starting at level 70, mobs have dramatically higher HP, compared to the EXP they give, making DPS the most important consideration
+* People will not party with you
+* Eco Mode won't apply DoTs to any new mobs that spawn in between casts
