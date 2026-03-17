@@ -18,7 +18,7 @@ Unique              Whether or not the spell needs to wear off before re-applyin
 """
 N_DEBUG = False
 eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
-N_ALLOW_GUI = False
+N_ALLOW_GUI = True
 
 spellDatabaseFile = open('./spellDb.json', 'r')
 spellDatabase = json.load(spellDatabaseFile)
