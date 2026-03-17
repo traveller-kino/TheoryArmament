@@ -18,6 +18,7 @@ Unique              Whether or not the spell needs to wear off before re-applyin
 """
 N_DEBUG = False
 eventLogAnchor = "[{Timestamp}]->[{Timestamp2}]\t{SpellName}\t{Activity}"
+N_ALLOW_GUI = False
 
 spellDatabaseFile = open('./spellDb.json', 'r')
 spellDatabase = json.load(spellDatabaseFile)
@@ -27,7 +28,7 @@ for spell in spellDatabase:
 
 
 # Simulation Parameters
-SIM_TARGETS =               1           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
+SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
 SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
 SIM_TIMING_EPSILON =        1.000       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
@@ -133,7 +134,8 @@ def runDyno(filePath, friendlyName):
     plt.xlabel("Simulator Time", fontsize=12)
     plt.ylabel("Cumulative Damage", fontsize=12)
     plt.grid(True, alpha=0.5)
-    plt.show()
+    if N_ALLOW_GUI: plt.show()
+    print(friendlyName + '\t\t' + str(totalGeneralDps.values[0]))
     return
 
 for rotationFile in os.listdir('./rotationSpecimens'):

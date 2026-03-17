@@ -1,7 +1,7 @@
 # Rotation simulation (currently for F/P Mages)
 Note: this is not for "MapleStory at home" ;) (not that you'd roll F/P anyway), this is for the upcoming Classic World, with the information we know.
 
-
+# Outdated - need to rework because the conclusions are WRONG
 Current simulator results of interest:
 | Pattern / Mobs Targeted : DPS | 1           | 2            | 3            | 4        | 5             |   | AVG            | MAX           |   | AVG MP/S     | DMG/MP               |
 |-------------------------------|-------------|--------------|--------------|----------|---------------|---|----------------|---------------|---|--------------|----------------------|
