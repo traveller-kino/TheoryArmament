@@ -4,6 +4,7 @@ import json
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+import os
 
 """
 SpellDB Fields
@@ -26,7 +27,7 @@ for spell in spellDatabase:
 
 
 # Simulation Parameters
-SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
+SIM_TARGETS =               1           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
 SIM_ADVANCE_RETARD =        1.00        # Globally advance or retard spell timings (e.g. +10% attack speed => 1.10)
 SIM_TIMING_EPSILON =        1.000       # Timing step for simulation in milliseconds (i.e. dX in Calculus)
 SIM_DROP_CAST_CHANCE =      0.01        # Chance for spell to whiff
@@ -113,27 +114,29 @@ def simulateRotation(rotation):
         currentTime += SIM_TIMING_EPSILON
     return damageAttributions
 
-a = readRotation('./rotation.csv')
-b = simulateRotation(a)
+def runDyno(filePath, friendlyName):
+    a = readRotation(filePath)
+    b = simulateRotation(a)
 
-totalDamageWithAttribution = b.groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
-totalGeneralDamage = b.sum(numeric_only=True).drop('Timestamp')
-totalGeneralDps = (SIM_ADVANCE_RETARD * totalGeneralDamage) / (SIM_RUNTIME / 1000)
+    totalDamageWithAttribution = b.groupby('SpellName')['Damage'].sum().reset_index().values.tolist()
+    totalGeneralDamage = b.sum(numeric_only=True).drop('Timestamp')
+    totalGeneralDps = (SIM_ADVANCE_RETARD * totalGeneralDamage) / (SIM_RUNTIME / 1000)
 
-b['Timestamp'] = pd.to_datetime(b['Timestamp'],unit='ms')
-b['Cumulative Damage'] = b.groupby("SpellName")['Damage'].cumsum()
-for spell_name, entry_data in b.groupby("SpellName"):
-    plt.plot(entry_data['Timestamp'], entry_data['Cumulative Damage'], label=spell_name)
-plt.plot(b['Timestamp'], b['Damage'].cumsum(), label='Total')
-#b.plot(x='Timestamp', y='Cumulative Damage', kind='line')
-plt.legend(title="Damage Source")
-plt.title("Dynamometer Output for {n} Targets\nTotal = {total}\nDPS = {dps}".format(n=SIM_TARGETS,total=totalGeneralDamage.values[0],dps=totalGeneralDps.values[0]))
-plt.xlabel("Simulator Time", fontsize=12)
-plt.ylabel("Cumulative Damage", fontsize=12)
-plt.grid(True, alpha=0.5)
-plt.show()
+    b['Timestamp'] = pd.to_datetime(b['Timestamp'],unit='ms')
+    b['Cumulative Damage'] = b.groupby("SpellName")['Damage'].cumsum()
+    for spell_name, entry_data in b.groupby("SpellName"):
+        plt.plot(entry_data['Timestamp'], entry_data['Cumulative Damage'], label=spell_name)
+    plt.plot(b['Timestamp'], b['Damage'].cumsum(), label='Total')
+    #b.plot(x='Timestamp', y='Cumulative Damage', kind='line')
+    plt.legend(title="Damage Source")
+    plt.title("Dynamometer Output for {n} Targets\nStrategy={strategy}\nTotal = {total}\nDPS = {dps}".format(n=SIM_TARGETS,total=totalGeneralDamage.values[0],dps=totalGeneralDps.values[0],strategy=friendlyName))
+    plt.xlabel("Simulator Time", fontsize=12)
+    plt.ylabel("Cumulative Damage", fontsize=12)
+    plt.grid(True, alpha=0.5)
+    plt.show()
+    return
 
-print(totalDamageWithAttribution)
-print(totalGeneralDamage)
-print(totalGeneralDps)
-
+for rotationFile in os.listdir('./rotationSpecimens'):
+    folderAnchor = './rotationSpecimens/' # be careful of path traversal vulns
+    fileName = folderAnchor + rotationFile
+    runDyno(fileName, rotationFile[:-4])
