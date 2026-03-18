@@ -118,7 +118,7 @@ def simulateRotation(rotation):
                     spellTimers.append(sSpell['Timing'][1])
                     print(eventLogAnchor.format(Timestamp=currentTime,Activity='Applied',SpellName=sSpell['SpellName'],Timestamp2=currentTime+sSpell['Timing'][1])) if N_DEBUG else ''
                 else:
-                    # reset DoT
+                    # TODO: add DoT resetting
                     print(eventLogAnchor.format(Timestamp=currentTime,Activity='RESET',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
                 
         currentTime += SIM_TIMING_EPSILON
