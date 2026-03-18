@@ -25,7 +25,16 @@ spellDatabase = json.load(spellDatabaseFile)
 spellIndex = {}
 for spell in spellDatabase:
     spellIndex[spell['SpellName']] = spell
-
+dotIndex = {}
+for spell in spellDatabase:
+    if spell.get('SecondaryEffect') is None: break
+    
+    for sSpell in spell.get('SecondaryEffect'):
+        if sSpell.get('GroupId'):
+            dot = sSpell
+            if dotIndex.get(sSpell.get('GroupId')):
+                dotIndex[sSpell.get('GroupId')].append(dot)
+            else: dotIndex[sSpell.get('GroupId')] = [dot]
 
 # Simulation Parameters
 SIM_TARGETS =               5           # Even in SIM, FoE! https://youtu.be/dB_PVPyn6n8
@@ -99,18 +108,18 @@ def simulateRotation(rotation):
                 sSpell['Timing'] = [ 0.00, spell['Timing'][1] + sSpell['TimingOffset'][1] ]
                 
                 suppress = False
-                if sSpell['Unique'] == True:
+                if sSpell['Unique'] == True: # if resettable, re-apply by group ID, otherwise, ignore
                     for oSpell in frozenActiveSpells:
                         if not oSpell.get('GroupId'): continue
                         else: 
                             if oSpell.get('GroupId') == sSpell.get('GroupId'): suppress = True
-                        #if oSpell['SpellName'] == sSpell['SpellName']: suppress = True
                 if not suppress: 
                     activeSpells.append(sSpell)
                     spellTimers.append(sSpell['Timing'][1])
                     print(eventLogAnchor.format(Timestamp=currentTime,Activity='Applied',SpellName=sSpell['SpellName'],Timestamp2=currentTime+sSpell['Timing'][1])) if N_DEBUG else ''
                 else:
-                    print(eventLogAnchor.format(Timestamp=currentTime,Activity='SUPPRESSED',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
+                    # reset DoT
+                    print(eventLogAnchor.format(Timestamp=currentTime,Activity='RESET',SpellName=sSpell['SpellName'],Timestamp2='NULL')) if N_DEBUG else ''
                 
         currentTime += SIM_TIMING_EPSILON
     return damageAttributions
