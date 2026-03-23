@@ -1,3 +1,6 @@
+Current simulation flaws
+* DoTs are ignored, not reset, if re-applied
+* Does not simulate mob respawn/death cycle, which understates effects of DoTs
 # Rotation simulation (currently for F/P Mages)
 Note: this is not for "MapleStory at home" ;) (not that you'd roll F/P anyway), this is for the upcoming Classic World, with the information we know.
 

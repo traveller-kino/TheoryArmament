@@ -1,0 +1,18 @@
+[ 
+{
+    "MobName": "Hybrid Golem",
+    "effectiveHitPoints": 1500,
+    "magicResistanceFactor": 1.00,
+    "physicalResistanceFactor": 1.50,
+    "respawnsAfter": 15000,
+    "count": 3
+},
+{
+    "MobName": "Jr. Boogie (Buzzkill)",
+    "effectiveHitPoints": 250,
+    "magicResistanceFactor": 1.50,
+    "physicalResistanceFactor": 1.00,
+    "respawnsAfter": 60000,
+    "count": 2
+}
+]
