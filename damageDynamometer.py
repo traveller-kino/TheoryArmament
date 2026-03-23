@@ -52,13 +52,6 @@ def readRotation(filename):
     theFile.close()
     return rotation
 
-# NOTE: need to stop editing spells directly, and use an associative array for tracking time expirations
-# "new" timing code
-    # add active spell to queue | activeSpells = []
-    # New spells are always APPENDED to activeSpells
-    # add timing queue | spellTimers = []
-    # ..., so order is preserved
-    # this way, activeSpells and spellTimers indices always 'stay with each other'
 def simulateRotation(rotation):
     currentTime =   0.00
     terminalTime =  SIM_RUNTIME

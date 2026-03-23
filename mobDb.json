@@ -1,18 +1,29 @@
 [ 
 {
-    "MobName": "Hybrid Golem",
-    "effectiveHitPoints": 1500,
-    "magicResistanceFactor": 1.00,
-    "physicalResistanceFactor": 1.50,
-    "respawnsAfter": 15000,
-    "count": 3
-},
-{
-    "MobName": "Jr. Boogie (Buzzkill)",
-    "effectiveHitPoints": 250,
-    "magicResistanceFactor": 1.50,
-    "physicalResistanceFactor": 1.00,
-    "respawnsAfter": 60000,
-    "count": 2
+    "Location": "Agartha",
+    "MonsterSpawns": [
+    {
+        "MobName": "Hybrid Golem",
+        "effectiveHitPoints": 1500,
+        "magicResistanceFactor": null,
+        "physicalResistanceFactor": null,
+        "weakTo": null,
+        "toughTo": null,
+        "immuneTo": null,
+        "respawnsAfter": 15000,
+        "count": 3
+    },
+    {
+        "MobName": "Jr. Boogie",
+        "effectiveHitPoints": 600,
+        "magicResistanceFactor": null,
+        "physicalResistanceFactor": null,
+        "weakTo": null,
+        "toughTo": null,
+        "immuneTo": null,
+        "respawnsAfter": 60000,
+        "count": 2
+    }
+    ]
 }
 ]
